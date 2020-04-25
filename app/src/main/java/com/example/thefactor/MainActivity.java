@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -54,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private ColorStateList textColourDefaultRb;
     private ColorStateList textColourDefaulttimer;
 
-    private ArrayList<Integer> list=new ArrayList<Integer>();
-    private ArrayList<Integer> arr=new ArrayList<Integer>();
+
     private ArrayList<Integer> a=new ArrayList<Integer>();
     private Random rand=new Random();
      private int score;
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private long timeLeftinmillis;
     private long Countdowntime=20000;
 
-    private boolean answered;
     private Button finishquiz;
     private Handler mHandler = new Handler();
 
@@ -102,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 timeLeftinmillis=Countdowntime;
                 ed.onEditorAction(EditorInfo.IME_ACTION_DONE);
+
 
                 clear();
             }
@@ -169,11 +169,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void clear() {
 
         show.setText("");
         if(!ed.getText().toString().equals("")&&ed.getText().toString().length()>0) {
-            try {
+           try {
                 n = Integer.parseInt(ed.getText().toString());
 
 
@@ -181,8 +182,7 @@ public class MainActivity extends AppCompatActivity {
                     s.cancel();
 
 
-                list.clear();
-                arr.clear();
+
                 a.clear();
                 s = new CountDownTimer(timeLeftinmillis, 1000) {
                     @Override
@@ -226,16 +226,47 @@ public class MainActivity extends AppCompatActivity {
                         a.add(1);
                         a.add(2);
                         a.add(3);
+                        Collections.shuffle(a);
+                        Integer[] array = a.toArray(new Integer[0]);
+                        rb1.setText(String.valueOf(array[0]));
+                        rb2.setText(String.valueOf(array[1]));
+                        rb3.setText(String.valueOf(array[2]));
+
+                        if (n % array[0] == 0) {
+                            option = 1;
+                        } else if (n % array[1] == 0) {
+                            option = 2;
+                        } else {
+                            option = 3;
+                        }
+                        check.setEnabled(true);
                     }
                     else if (n == 2 || n == 3 || n == 4)
                     {
                         a.add(2);
                         a.add(3);
                         a.add(5);
+                        Collections.shuffle(a);
+                        Integer[] array = a.toArray(new Integer[0]);
+                        rb1.setText(String.valueOf(array[0]));
+                        rb2.setText(String.valueOf(array[1]));
+                        rb3.setText(String.valueOf(array[2]));
+
+                        if (n % array[0] == 0) {
+                            option = 1;
+                        } else if (n % array[1] == 0) {
+                            option = 2;
+                        } else {
+                            option = 3;
+                        }
+
+                        check.setEnabled(true);
                     }
                     else
                     {
-                        int count=0;
+                        startasynctask();
+                    }
+                       /* int count=0;
                         for(int i=2;i<=sqrt(n);i++)
                         {
                             if(n%i==0) {
@@ -247,7 +278,10 @@ public class MainActivity extends AppCompatActivity {
                         {
                             l=n;
                         }
-                        else {
+
+
+                         else
+                        {
                             l = rand.nextInt(n) + 1;
                             while (n % l != 0) {
                                 l = rand.nextInt(n) + 1;
@@ -264,10 +298,10 @@ public class MainActivity extends AppCompatActivity {
                         while (k == m || n % k == 0) {
                             k = rand.nextInt(n) + 1;
                         }
-                        a.add(k);
+                        a.add(k);*/
 
 
-                    }
+
                    /* for (i = 2; i <= n; i++) {
                         if (n % i == 0) {
                             list.add(i);
@@ -289,25 +323,12 @@ public class MainActivity extends AppCompatActivity {
                     a.add(arr.get(m));
                 }*/
 
-                    Collections.shuffle(a);
-                    Integer[] array = a.toArray(new Integer[0]);
+                    //Collections.shuffle(a);
+                   // Integer[] array = a.toArray(new Integer[0]);
 
-                    rb1.setText(String.valueOf(array[0]));
-                    rb2.setText(String.valueOf(array[1]));
-                    rb3.setText(String.valueOf(array[2]));
-
-                    if (n % array[0] == 0) {
-                        option = 1;
-                    } else if (n % array[1] == 0) {
-                        option = 2;
-                    } else {
-                        option = 3;
-                    }
-                    answered = false;
-                    check.setEnabled(true);
                 }
-            }
-            catch (Exception e)
+           }
+           catch (Exception e)
             {
                 Toast.makeText(getApplicationContext(),"Invalid input",Toast.LENGTH_SHORT).show();
                 if(s!=null)
@@ -404,6 +425,78 @@ public class MainActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
+    public void startasynctask()
+    {
+        ExampleAsyncTask task=new ExampleAsyncTask();
+        task.execute(n);
+
+    }
+    private class ExampleAsyncTask extends AsyncTask<Integer,Integer,ArrayList<Integer>>{
+
+
+
+        @Override
+        protected ArrayList<Integer> doInBackground(Integer... integers) {
+            int count=0,l,k,m;
+            Random rand=new Random();
+            ArrayList<Integer> a=new ArrayList<Integer>();
+            for(int i=2;i<=sqrt(integers[0]);i++)
+            {
+                if(integers[0]%i==0) {
+                    count++;
+                    break;
+                }
+            }
+            if(count==0)
+            {
+                 l=integers[0];
+            }
+
+
+            else
+            {
+                l = rand.nextInt(integers[0]) + 1;
+                while (integers[0]% l != 0) {
+                    l = rand.nextInt(integers[0]) + 1;
+
+                }
+            }
+            a.add(l);
+            m = rand.nextInt(integers[0]) + 1;
+            while (integers[0] % m == 0) {
+                m = rand.nextInt(integers[0]) + 1;
+            }
+            a.add(m);
+            k = rand.nextInt(integers[0]) + 1;
+            while (k == m || integers[0] % k == 0) {
+                k = rand.nextInt(integers[0]) + 1;
+            }
+            a.add(k);
+
+            return a;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Integer> integers) {
+            super.onPostExecute(integers);
+            Collections.shuffle(integers);
+            Integer[] array = integers.toArray(new Integer[0]);
+            rb1.setText(String.valueOf(array[0]));
+            rb2.setText(String.valueOf(array[1]));
+            rb3.setText(String.valueOf(array[2]));
+
+            if (n % array[0] == 0) {
+                option = 1;
+            } else if (n % array[1] == 0) {
+                option = 2;
+            } else {
+                option = 3;
+            }
+            check.setEnabled(true);
+
+        }
+    }
+
     protected void onDestroy() {
 
         super.onDestroy();
