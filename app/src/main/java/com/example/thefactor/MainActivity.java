@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Integer> a=new ArrayList<Integer>();
     private Random rand=new Random();
      private int score;
-    private int total;
     private int option;
     private int i;
     private int l;
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         });
         if(savedInstanceState != null) {
             score = savedInstanceState.getInt(keyscore);
-            total = savedInstanceState.getInt(keytotal);
             timeLeftinmillis = savedInstanceState.getLong(keymillis);
 
 
@@ -203,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onFinish() {
                         Intent f = new Intent(getApplicationContext(), Main3Activity.class);
                         f.putExtra("Score", score);
+                        finish();
                         startActivity(f);
 
                     }
@@ -239,9 +238,10 @@ public class MainActivity extends AppCompatActivity {
                         int count=0;
                         for(int i=2;i<sqrt(n);i++)
                         {
-                            if(n%i==0)
+                            if(n%i==0) {
                                 count++;
                                 break;
+                            }
                         }
                         if(count==0)
                         {
@@ -336,7 +336,6 @@ public class MainActivity extends AppCompatActivity {
 
         RadioButton selected= findViewById(rbgroup.getCheckedRadioButtonId());
         int ans= rbgroup.indexOfChild(selected)+1;
-        total++;
 
 
         if(ans== option)
@@ -377,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
         rb1.setTextColor(Color.RED);
         rb2.setTextColor(Color.RED);
         rb3.setTextColor(Color.RED);
-        textviewscore.setText("Score:"+score+"/"+total);
+        textviewscore.setText("Score:"+score);
         switch(option)
         {
             case 1:
@@ -427,7 +426,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(keyscore,score);
-        outState.putInt(keytotal,total);
         outState.putLong(keymillis,timeLeftinmillis);
     }
 }
