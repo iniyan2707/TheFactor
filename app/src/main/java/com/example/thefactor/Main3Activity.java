@@ -36,6 +36,7 @@ public class Main3Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent f=new Intent(getApplicationContext(),Main2Activity.class);
+                finish();
                    startActivity(f);
             }
         });
@@ -66,8 +67,5 @@ public class Main3Activity extends AppCompatActivity {
         textHS.setText("High Score:"+highscore);
 
     }
-    public void onBackPressed()
-    {
 
-    }
 }

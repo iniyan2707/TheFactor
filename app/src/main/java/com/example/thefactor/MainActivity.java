@@ -11,9 +11,11 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.os.Vibrator;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean answered;
     private Button finishquiz;
+    private Handler mHandler = new Handler();
 
 
 
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timeLeftinmillis=Countdowntime;
+                ed.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
                 clear();
             }
@@ -152,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onFinish() {
                     Intent f = new Intent(getApplicationContext(), Main3Activity.class);
                     f.putExtra("Score", score);
+                    finish();
                     startActivity(f);
 
                 }
@@ -170,60 +175,100 @@ public class MainActivity extends AppCompatActivity {
 
         show.setText("");
         if(!ed.getText().toString().equals("")&&ed.getText().toString().length()>0) {
-            n = Integer.parseInt(ed.getText().toString());
-            if(s!=null)
-                s.cancel();
+            try {
+                n = Integer.parseInt(ed.getText().toString());
 
 
-
-            list.clear();
-            arr.clear();
-            a.clear();
-            s = new CountDownTimer(timeLeftinmillis, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timeLeftinmillis=millisUntilFinished;
-                    String time = String.format(Locale.getDefault(), "00:%02d", timeLeftinmillis / 1000);
-                    timer.setText(time);
-                    if (timeLeftinmillis < 10000)
-                        timer.setTextColor(Color.RED);
-                    else
-                        timer.setTextColor(textColourDefaulttimer);
-
-                }
-
-                @Override
-                public void onFinish() {
-                    Intent f = new Intent(getApplicationContext(), Main3Activity.class);
-                    f.putExtra("Score", score);
-                    startActivity(f);
-
-                }
-            }.start();
-
-
-            rb1.setTextColor(textColourDefaultRb);
-            rb2.setTextColor(textColourDefaultRb);
-            rb3.setTextColor(textColourDefaultRb);
-            if (n == 0) {
-                Toast.makeText(getApplicationContext(), "Number 0 has infinite factors", Toast.LENGTH_SHORT).show();
-                if(s!=null)
+                if (s != null)
                     s.cancel();
-                check.setEnabled(false);
 
-            }
-            else {
-                if (n == 1) {
-                    a.add(1);
-                    a.add(2);
-                    a.add(3);
-                } else if (n == 2 || n == 3 || n == 4) {
-                    a.add(2);
-                    a.add(3);
-                    a.add(5);
-                } else {
 
-                    for (i = 2; i <= n; i++) {
+                list.clear();
+                arr.clear();
+                a.clear();
+                s = new CountDownTimer(timeLeftinmillis, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        timeLeftinmillis = millisUntilFinished;
+                        String time = String.format(Locale.getDefault(), "00:%02d", timeLeftinmillis / 1000);
+                        timer.setText(time);
+                        if (timeLeftinmillis < 10000)
+                            timer.setTextColor(Color.RED);
+                        else
+                            timer.setTextColor(textColourDefaulttimer);
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        Intent f = new Intent(getApplicationContext(), Main3Activity.class);
+                        f.putExtra("Score", score);
+                        startActivity(f);
+
+                    }
+                }.start();
+
+
+                rb1.setTextColor(textColourDefaultRb);
+                rb2.setTextColor(textColourDefaultRb);
+                rb3.setTextColor(textColourDefaultRb);
+                if (n == 0)
+                {
+                    Toast.makeText(getApplicationContext(), "Number 0 has infinite factors", Toast.LENGTH_SHORT).show();
+                    if (s != null)
+                        s.cancel();
+                    check.setEnabled(false);
+
+                }
+                else
+                    {
+                    if (n == 1)
+                    {
+                        a.add(1);
+                        a.add(2);
+                        a.add(3);
+                    }
+                    else if (n == 2 || n == 3 || n == 4)
+                    {
+                        a.add(2);
+                        a.add(3);
+                        a.add(5);
+                    }
+                    else
+                    {
+                        int count=0;
+                        for(int i=2;i<sqrt(n);i++)
+                        {
+                            if(n%i==0)
+                                count++;
+                                break;
+                        }
+                        if(count==0)
+                        {
+                            l=n;
+                        }
+                        else {
+                            l = rand.nextInt(n) + 1;
+                            while (n % l != 0) {
+                                l = rand.nextInt(n) + 1;
+
+                            }
+                        }
+                        a.add(l);
+                        m = rand.nextInt(n) + 1;
+                        while (n % m == 0) {
+                            m = rand.nextInt(n) + 1;
+                        }
+                        a.add(m);
+                        k = rand.nextInt(n) + 1;
+                        while (k == m || n % k == 0) {
+                            k = rand.nextInt(n) + 1;
+                        }
+                        a.add(k);
+
+
+                    }
+                   /* for (i = 2; i <= n; i++) {
                         if (n % i == 0) {
                             list.add(i);
 
@@ -242,24 +287,33 @@ public class MainActivity extends AppCompatActivity {
                         m = rand.nextInt(arr.size());
                     }
                     a.add(arr.get(m));
+                }*/
+
+                    Collections.shuffle(a);
+                    Integer[] array = a.toArray(new Integer[0]);
+
+                    rb1.setText(String.valueOf(array[0]));
+                    rb2.setText(String.valueOf(array[1]));
+                    rb3.setText(String.valueOf(array[2]));
+
+                    if (n % array[0] == 0) {
+                        option = 1;
+                    } else if (n % array[1] == 0) {
+                        option = 2;
+                    } else {
+                        option = 3;
+                    }
+                    answered = false;
+                    check.setEnabled(true);
                 }
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(getApplicationContext(),"Invalid input",Toast.LENGTH_SHORT).show();
+                if(s!=null)
+                    s.cancel();
+                check.setEnabled(false);
 
-                Collections.shuffle(a);
-                Integer[] array = a.toArray(new Integer[0]);
-
-                rb1.setText(String.valueOf(array[0]));
-                rb2.setText(String.valueOf(array[1]));
-                rb3.setText(String.valueOf(array[2]));
-
-                if (n % array[0] == 0) {
-                    option = 1;
-                } else if (n % array[1] == 0) {
-                    option = 2;
-                } else {
-                    option = 3;
-                }
-                answered = false;
-                check.setEnabled(true);
             }
         }
         else
@@ -288,19 +342,36 @@ public class MainActivity extends AppCompatActivity {
         if(ans== option)
         {
             score++;
+            showSolution();
+
 
 
         }
         else
         {
             vibrator.vibrate(1000);
+            showSolution();
+            if(s!=null)
+                s.cancel();
+            submit.setEnabled(false);
+            finishquiz.setEnabled(false);
+            mHandler.postDelayed(mLaunchTask,1000);
+
+
         }
-        showSolution();
+
 
 
 
 
     }
+    private Runnable mLaunchTask = new Runnable() {
+        public void run() {
+            finishgame();
+
+        }
+    };
+
     private void showSolution()
     {
         rb1.setTextColor(Color.RED);
@@ -330,6 +401,7 @@ public class MainActivity extends AppCompatActivity {
         int o=score;
 
         intent.putExtra("Score",o);
+        finish();
 
         startActivity(intent);
     }
